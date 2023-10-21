@@ -49,40 +49,44 @@ def perform_backtest(symbol_list_length=250, investment=10000000, commission=0, 
     results = []
 
     for i in range(len(symbols)):
-        symbol = symbols[i]
-        name = names[i]
-        fy_df = mst.get_yf_df(symbol, start_date, end_date, interval)
+        try:
+            symbol = symbols[i]
+            name = names[i]
+            fy_df = mst.get_yf_df(symbol, start_date, end_date, interval)
 
-        print(symbol)
-        atr_period, multiplier, ROI = mst.find_optimal_parameter(fy_df, strategy, backtest, investment, commission, None, None)
-        print(f'Best parameter set: ATR Period={atr_period}, Multiplier={multiplier}, ROI={ROI}%')
-        best_df = mst.get_yf_df_with_best_parameters(symbol, start_date, end_date, interval,atr_period, multiplier)
-        mst.backtest_supertrend(best_df, investment, commission, True, False)
-        print(" ")
+            print(symbol)
+            atr_period, multiplier, ROI = mst.find_optimal_parameter(fy_df, strategy, backtest, investment, commission, None, None)
+            print(f'Best parameter set: ATR Period={atr_period}, Multiplier={multiplier}, ROI={ROI}%')
+            best_df = mst.get_yf_df_with_best_parameters(symbol, start_date, end_date, interval,atr_period, multiplier)
+            mst.backtest_supertrend(best_df, investment, commission, True, False)
+            print(" ")
 
-        results.append({
-            "symbol": symbol,
-            "name":name,
-            "ROI": round(ROI/100,4),
-            "start_date": start_date,
-            "end_date": end_date,
-        })
-        
-        for result in results:
-            table.put_item(
-                Item={
-                    'id': str(uuid4()),  # Generate a unique id
-                    'symbol': result['symbol'],
-                    'name': result['name'],
-                    'product_category': 'Cryptocurrency',
-                    'roi': str(result['ROI']),
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    'strategy_category': 'Supertrend',
-                    'created_at': str(dt.datetime.now()),  # DynamoDB doesn't support datetime, so convert it to string
-                    'updated_at': str(dt.datetime.now()),
-                }
-            )
+            results.append({
+                "symbol": symbol,
+                "name":name,
+                "ROI": round(ROI/100,4),
+                "start_date": start_date,
+                "end_date": end_date,
+            })
+            
+            for result in results:
+                table.put_item(
+                    Item={
+                        'id': str(uuid4()),  # Generate a unique id
+                        'symbol': result['symbol'],
+                        'name': result['name'],
+                        'product_category': 'Cryptocurrency',
+                        'roi': str(result['ROI']),
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        'strategy_category': 'Supertrend',
+                        'created_at': str(dt.datetime.now()),  # DynamoDB doesn't support datetime, so convert it to string
+                        'updated_at': str(dt.datetime.now()),
+                    }
+                )
+        except Exception as e:
+                    print(e)
+             
             
 
 
