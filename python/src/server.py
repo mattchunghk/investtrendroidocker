@@ -20,12 +20,13 @@ aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 region_name = os.getenv('AWS_REGION')
 
+    
 dynamodb = boto3.resource('dynamodb', 
                           aws_access_key_id=aws_access_key_id, 
                           aws_secret_access_key=aws_secret_access_key, 
                           region_name=region_name)
 
-table = dynamodb.Table('higestreturnOneYear-dev')
+
 # table = dynamodb.Table('run5yearshighestreturn-dev')
 
 # app = Flask(__name__)
@@ -33,13 +34,38 @@ table = dynamodb.Table('higestreturnOneYear-dev')
 
 
 
-def perform_backtest(symbol_list_length=250, investment=10000000, commission=0, start_date=None, end_date=None, interval='1d', print_result=True, print_detail=True):
+def perform_backtest(symbol_list_length=250, investment=10000000, commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table=None, print_result=True, print_detail=True):
+
+
+    table = dynamodb.Table(db_table)
+    
+    period = 0    
+    
+    if test_period == "1Y":
+        period = 365
+    elif test_period == "3M":
+        period = 90
+    elif test_period == "1M":
+        period = 30
+    elif test_period == "1W":
+        period = 7
+    elif test_period == "1D":
+        period = 1
+    elif test_period == "1H":
+        interval = "1h"
+        period = 1
+    
+    
     
     # if no start_date or end_date is provided, use default values
     if start_date is None:
-        start_date = (datetime.now() - timedelta(days=1*365)).strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=period)).strftime('%Y-%m-%d')
     if end_date is None:
         end_date = datetime.now().strftime('%Y-%m-%d')
+    
+
+        
+        
 
     strategy = mst.Supertrend
     backtest = mst.backtest_supertrend
@@ -93,12 +119,27 @@ def perform_backtest(symbol_list_length=250, investment=10000000, commission=0, 
 
 
 # Define the job function to be scheduled
-def job():
+def day_job():
     print("Performing backtest...")
-    perform_backtest()
+    symbol_list_length=250
+    investment=10000000
+    commission=0
+    start_date=None
+    end_date=None
+    interval='1d'
+    test_period="1Y"
+    print_result=True
+    print_detail=True
+    
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1Y", 'higestreturnOneYear-dev',print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "3M", 'higestreturnThreeMonth-dev',print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1M", 'higestreturnOneMonth-dev',print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1W", 'higestreturnOneWeek-dev',print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1D", 'higestreturnOneDay-dev',print_result, print_detail)
+    
 
 # Schedule the job to run every hour
-schedule.every().hour.do(job)
+schedule.every().day.do(day_job)
 
 # Run the scheduler loop
 while True:
