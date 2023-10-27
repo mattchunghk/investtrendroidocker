@@ -1,0 +1,14 @@
+{
+  "resourceName": "highestreturnOneMonth",
+  "tableName": "highestreturnOneMonth",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "roi",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

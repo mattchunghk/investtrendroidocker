@@ -1,0 +1,85 @@
+{
+  "api": {
+    "gethighestreturn": {
+      "apiType": "REST",
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "gethighestreturn",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false
+    },
+    "getmostrecentchange": {
+      "apiType": "REST",
+      "build": true,
+      "categoryPolicies": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "environmentMap": {},
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "mutableParametersState": {
+        "permissions": {}
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "getmostrecentchange",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false
+    }
+  },
+  "storage": {
+    "higestreturnOneDay": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "higestreturnOneWeek": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "higestreturnThreeMonth": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "highestreturnOneMonth": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    }
+  }
+}
