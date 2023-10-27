@@ -34,9 +34,10 @@ dynamodb = boto3.resource('dynamodb',
 
 
 
-def perform_backtest(symbol_list_length=250, investment=10000000, commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table=None, print_result=True, print_detail=True):
+def perform_backtest(symbol_list_length=3, investment=10000000, commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table="", print_result=True, print_detail=True):
 
 
+    print('db_table: ', db_table)
     table = dynamodb.Table(db_table)
     
     period = 0    
@@ -131,19 +132,19 @@ def day_job():
     print_result=True
     print_detail=True
     
-    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1Y", 'higestreturnOneYear-dev',print_result, print_detail)
-    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "3M", 'higestreturnThreeMonth-dev',print_result, print_detail)
-    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1M", 'higestreturnOneMonth-dev',print_result, print_detail)
-    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1W", 'higestreturnOneWeek-dev',print_result, print_detail)
-    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1D", 'higestreturnOneDay-dev',print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear-dev",print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth-dev",print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth-dev",print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek-dev",print_result, print_detail)
+    perform_backtest(symbol_list_length, investment, commission, start_date, end_date, interval, "1D", "higestreturnOneDay-dev",print_result, print_detail)
     
 
 # Schedule the job to run every hour
-schedule.every().day.do(day_job)
+schedule.every(1).day.do(day_job)
 
 # Run the scheduler loop
 while True:
-    perform_backtest()
+    day_job()
     schedule.run_pending()
     time.sleep(1)
 
