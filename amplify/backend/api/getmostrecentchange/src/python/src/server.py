@@ -5,6 +5,7 @@ import boto3
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from itertools import groupby
+import operator
 
 import datetime as dt
 
@@ -24,180 +25,84 @@ dynamodb = boto3.resource('dynamodb',
 app = Flask(__name__)
 CORS(app)
 
-BASE_ROUTE = "/highestreturn"
+def get_roi_variation(table_name):
+    table = dynamodb.Table(table_name)
+
+    # Scan the table
+    response = table.scan()
+
+    # Get the items
+    items = response['Items']
+
+    # Convert 'created_at' from string to datetime and sort items by symbol and date
+    items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
+
+    # Group items by symbol and select the two most recent items in each group
+    latest_two_items_by_symbol = {}
+    for key, group in groupby(items, lambda x: x['symbol']):
+        sorted_group = sorted(list(group), key=lambda x: x['created_at'], reverse=True)
+        if len(sorted_group) >= 2:
+            latest_two_items_by_symbol[key] = sorted_group[:2]
+
+    # Calculate the variation in roi between the latest and second latest item for each symbol
+    roi_variations = {}
+    for key, items in latest_two_items_by_symbol.items():
+        variation = float(items[0]['roi']) - float(items[1]['roi'])
+        roi_variations[key] = {
+            "roi_variation": variation,
+            "name": items[0]['name'],
+            "latest_roi": items[0]['roi'],
+            "second_latest_roi": items[1]['roi'],
+            "created_at": items[0]['created_at']
+        }
+
+    # Sort the variations in descending order
+    sorted_roi_variations = sorted(roi_variations.items(), key=lambda x: x[1]['roi_variation'], reverse=True)
+
+    result = []
+    for item in sorted_roi_variations:
+        result.append({
+            "symbol": item[0],
+            "name": item[1]['name'],
+            "roi_variation": str(item[1]['roi_variation']),
+            "latest_roi": item[1]['latest_roi'],
+            "second_latest_roi": item[1]['second_latest_roi'],
+            "created_at": item[1]['created_at']
+        })
+
+    return jsonify(result)
+
+BASE_ROUTE = "/mostrecentchange"
 
 ONE_YEAR_ROUTE = "/oneyear"
 @app.route(BASE_ROUTE+ONE_YEAR_ROUTE, methods=['GET'])
-def get_latest_items_by_symbol_oneyear():
-    table = dynamodb.Table('higestreturnOneYear-dev')
-    # Scan the table
-    response = table.scan()
-
-    # Get the items
-    items = response['Items']
-
-    # Convert 'created_at' from string to datetime and sort items by symbol and date
-    items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-    # Group items by symbol and select the most recent item in each group
-    latest_items_by_symbol = {}
-    for key, group in groupby(items, lambda x: x['symbol']):
-        latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-    # Sort the latest items by symbol by ROI in descending order
-    latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: float(x['roi']), reverse=True)
-    print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
-    
-    result = []
-    for item in latest_items_sorted_by_roi:
-        print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-        result.append({
-                    "symbol": item['symbol'],
-                    "name":item['name'],
-                    "roi": item['roi'],
-                    "created_at":item['created_at']
-                })
-    print(result)
-    return result
+def run_get_roi_variation_one_year():
+    return get_roi_variation('higestreturnOneYear-dev')
 
 THREE_MONTH_ROUTE = "/threemonth"
 @app.route(BASE_ROUTE+THREE_MONTH_ROUTE, methods=['GET'])
-def get_latest_items_by_symbol_threemonth():
-    # Scan the table
-    table = dynamodb.Table('higestreturnThreeMonth-dev')
-    response = table.scan()
+def run_get_roi_variation_three_month():
+    return get_roi_variation('higestreturnThreeMonth-dev')
 
-    # Get the items
-    items = response['Items']
-
-    # Convert 'created_at' from string to datetime and sort items by symbol and date
-    items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-    # Group items by symbol and select the most recent item in each group
-    latest_items_by_symbol = {}
-    for key, group in groupby(items, lambda x: x['symbol']):
-        latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-    # Sort the latest items by symbol by ROI in descending order
-    latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: float(x['roi']), reverse=True)
-    print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
-    
-    result = []
-    for item in latest_items_sorted_by_roi:
-        print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-        result.append({
-                    "symbol": item['symbol'],
-                    "name":item['name'],
-                    "roi": item['roi'],
-                    "created_at":item['created_at']
-                })
-    print(result)
-    return result
 
 
 ONE_MONTH_ROUTE = "/onemonth"
 @app.route(BASE_ROUTE+ONE_MONTH_ROUTE, methods=['GET'])
-def get_latest_items_by_symbol_onemonth():
-    # Scan the table
-    table = dynamodb.Table('highestreturnOneMonth-dev')
-    response = table.scan()
+def run_get_roi_variation_one_month():
+    return get_roi_variation('highestreturnOneMonth-dev')
 
-    # Get the items
-    items = response['Items']
-
-    # Convert 'created_at' from string to datetime and sort items by symbol and date
-    items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-    # Group items by symbol and select the most recent item in each group
-    latest_items_by_symbol = {}
-    for key, group in groupby(items, lambda x: x['symbol']):
-        latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-    # Sort the latest items by symbol by ROI in descending order
-    latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: float(x['roi']), reverse=True)
-    print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
-    
-    result = []
-    for item in latest_items_sorted_by_roi:
-        print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-        result.append({
-                    "symbol": item['symbol'],
-                    "name":item['name'],
-                    "roi": item['roi'],
-                    "created_at":item['created_at']
-                })
-    print(result)
-    return result
 
 ONE_WEEK_ROUTE = "/oneweek"
 @app.route(BASE_ROUTE+ONE_WEEK_ROUTE, methods=['GET'])
-def get_latest_items_by_symbol_oneweek():
-    # Scan the table
-    table = dynamodb.Table('higestreturnOneWeek-dev')
-    response = table.scan()
+def run_get_roi_variation_one_week():
+    return get_roi_variation('higestreturnOneWeek-dev')
 
-    # Get the items
-    items = response['Items']
-
-    # Convert 'created_at' from string to datetime and sort items by symbol and date
-    items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-    # Group items by symbol and select the most recent item in each group
-    latest_items_by_symbol = {}
-    for key, group in groupby(items, lambda x: x['symbol']):
-        latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-    # Sort the latest items by symbol by ROI in descending order
-    latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: float(x['roi']), reverse=True)
-    print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
-    
-    result = []
-    for item in latest_items_sorted_by_roi:
-        print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-        result.append({
-                    "symbol": item['symbol'],
-                    "name":item['name'],
-                    "roi": item['roi'],
-                    "created_at":item['created_at']
-                })
-    print(result)
-    return result
 
 
 ONE_DAY_ROUTE = "/oneday"
 @app.route(BASE_ROUTE+ONE_DAY_ROUTE, methods=['GET'])
-def get_latest_items_by_symbol_oneday():
-    # Scan the table
-    table = dynamodb.Table('higestreturnOneDay-dev')
-    response = table.scan()
-
-    # Get the items
-    items = response['Items']
-
-    # Convert 'created_at' from string to datetime and sort items by symbol and date
-    items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-    # Group items by symbol and select the most recent item in each group
-    latest_items_by_symbol = {}
-    for key, group in groupby(items, lambda x: x['symbol']):
-        latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-    # Sort the latest items by symbol by ROI in descending order
-    latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: float(x['roi']), reverse=True)
-    print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
-    
-    result = []
-    for item in latest_items_sorted_by_roi:
-        print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-        result.append({
-                    "symbol": item['symbol'],
-                    "name":item['name'],
-                    "roi": item['roi'],
-                    "created_at":item['created_at']
-                })
-    print(result)
-    return result
-
+def run_get_roi_variation_one_day():
+    return get_roi_variation('higestreturnOneDay-dev')
 
 
 if __name__ == "__main__":
