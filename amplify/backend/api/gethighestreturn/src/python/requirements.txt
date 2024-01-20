@@ -10,4 +10,3 @@ python-dotenv==1.0.0
 requests-html==0.10.0
 python-math==0.0.1
 schedule==1.2.1
-mt5linux==0.1.9

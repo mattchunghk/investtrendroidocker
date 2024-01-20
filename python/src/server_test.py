@@ -142,56 +142,22 @@ def day_job():
     update_dynamodb_table(symbols, names, pd_table)
     print("DONE update_dynamodb_table")
     
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay-dev",print_result, print_detail)
+    # perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear-dev",print_result, print_detail)
+    # perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth-dev",print_result, print_detail)
+    # perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth-dev",print_result, print_detail)
+    # perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek-dev",print_result, print_detail)
+    perform_backtest(pd_table,investment, commission, start_date, end_date, '1h', "1D", "higestreturnOneDay-dev",print_result, print_detail)
     
 
 # Schedule the job to run every hour
 # schedule.every(1).day.do(day_job)
-schedule.every().day.at("00:00").do(day_job)
+# schedule.every().day.at("00:00").do(day_job)
 
-# Run the scheduler loop
-while True:
-    day_job()
-    schedule.run_pending()
-    time.sleep(1)
-
-# day_job()
-
-# def get_latest_items_by_symbol():
-#     # Scan the table
-#     response = table.scan()
-
-#     # Get the items
-#     items = response['Items']
-
-#     # Convert 'created_at' from string to datetime and sort items by symbol and date
-#     items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-#     # Group items by symbol and select the most recent item in each group
-#     latest_items_by_symbol = {}
-#     for key, group in groupby(items, lambda x: x['symbol']):
-#         latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-#     # Sort the latest items by symbol by ROI in descending order
-#     latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: x['roi'], reverse=True)
-#     print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
-    
-#     result = []
-#     for item in latest_items_sorted_by_roi:
-#         print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-#         result.append({
-#                     "symbol": item['symbol'],
-#                     "name":item['name'],
-#                     "roi": item['roi'],
-#                     "Created_at":item['created_at']
-#                 })
-
-#     return result
-
-# get_latest_items_by_symbol()
+# # Run the scheduler loop
+# while True:
+#     day_job()
+#     schedule.run_pending()
+#     time.sleep(1)
 
 
+day_job()

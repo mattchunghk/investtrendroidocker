@@ -95,7 +95,7 @@
           },
           "RoutingPolicy": "MULTIVALUE"
         },
-        "Name": "getmostrecentchange"
+        "Name": "gethighestreturn"
       }
     },
     "TaskDefinitionTaskRoleFD40A61D": {
@@ -138,7 +138,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/amplify-investtrendv2-dev-234900-api-getmostrecentchange-python:latest"
+                  "/amplify-investtrendv2-dev-234900-api-gethighestreturn-python:latest"
                 ]
               ]
             },
@@ -177,7 +177,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-getmostrecentchange"
+              "-gethighestreturn"
             ]
           ]
         },
@@ -239,7 +239,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":repository/amplify-investtrendv2-dev-234900-api-getmostrecentchange-python"
+                    ":repository/amplify-investtrendv2-dev-234900-api-gethighestreturn-python"
                   ]
                 ]
               }
@@ -302,7 +302,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-getmostrecentchange-python"
+              "-gethighestreturn-python"
             ]
           ]
         },
@@ -361,7 +361,7 @@
             }
           }
         },
-        "ServiceName": "getmostrecentchange-service-python-5050",
+        "ServiceName": "gethighestreturn-service-python-5050",
         "ServiceRegistries": [
           {
             "ContainerName": "python",
@@ -673,7 +673,7 @@
             "CLUSTER_NAME": {
               "Ref": "NetworkStackClusterName"
             },
-            "SERVICE_NAME": "getmostrecentchange-service-python-5050"
+            "SERVICE_NAME": "gethighestreturn-service-python-5050"
           }
         },
         "Handler": "index.handler",
@@ -889,7 +889,7 @@
                         {
                           "Ref": "AWS::URLSuffix"
                         },
-                        "/amplify-investtrendv2-dev-234900-api-getmostrecentchange-python\"}]"
+                        "/amplify-investtrendv2-dev-234900-api-gethighestreturn-python\"}]"
                       ]
                     ]
                   }
@@ -955,7 +955,7 @@
                   "ClusterName": {
                     "Ref": "NetworkStackClusterName"
                   },
-                  "ServiceName": "getmostrecentchange-service-python-5050"
+                  "ServiceName": "gethighestreturn-service-python-5050"
                 },
                 "InputArtifacts": [
                   {
@@ -988,7 +988,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-getmostrecentchange-service-python-5050"
+              "-gethighestreturn-service-python-5050"
             ]
           ]
         }
@@ -2187,7 +2187,7 @@
               {
                 "Ref": "rootStackName"
               },
-              "-getmostrecentchange"
+              "-gethighestreturn"
             ]
           ]
         },
@@ -2232,7 +2232,7 @@
           "Ref": "Api"
         },
         "AuthorizerType": "JWT",
-        "Name": "getmostrecentchangeAuthorizer",
+        "Name": "gethighestreturnAuthorizer",
         "IdentitySource": [
           "$request.header.Authorization"
         ],
@@ -2314,7 +2314,7 @@
   },
   "Outputs": {
     "ServiceName": {
-      "Value": "getmostrecentchange-service-python-5050"
+      "Value": "gethighestreturn-service-python-5050"
     },
     "ClusterName": {
       "Value": {
@@ -2329,7 +2329,7 @@
             {
               "Ref": "rootStackName"
             },
-            "-getmostrecentchange-service-python-5050"
+            "-gethighestreturn-service-python-5050"
           ]
         ]
       }
@@ -2338,7 +2338,7 @@
       "Value": "python"
     },
     "ApiName": {
-      "Value": "getmostrecentchange"
+      "Value": "gethighestreturn"
     },
     "RootUrl": {
       "Value": {

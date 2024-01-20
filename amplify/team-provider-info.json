@@ -14,7 +14,8 @@
     },
     "categories": {
       "api": {
-        "gethighestreturn": {}
+        "gethighestreturn": {},
+        "getmostrecentchange": {}
       },
       "storage": {
         "highestreturnOneMonth": {},
