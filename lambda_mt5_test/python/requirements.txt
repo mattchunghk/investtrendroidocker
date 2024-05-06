@@ -1,4 +1,0 @@
-aws_wsgi==0.2.7
-boto3==1.28.62
-python-dotenv==1.0.0
-mt5linux==0.1.9
