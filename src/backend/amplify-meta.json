@@ -1,0 +1,423 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-investtrendv2-dev-234900-authRole",
+      "UnauthRoleArn": "arn:aws:iam::424001042826:role/amplify-investtrendv2-dev-234900-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::424001042826:role/amplify-investtrendv2-dev-234900-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-investtrendv2-dev-234900-deployment",
+      "UnauthRoleName": "amplify-investtrendv2-dev-234900-unauthRole",
+      "StackName": "amplify-investtrendv2-dev-234900",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:424001042826:stack/amplify-investtrendv2-dev-234900/5b369d60-7029-11ee-b890-06c582aaa8b4",
+      "AmplifyAppId": "d2nsz01ir8b6oj",
+      "NetworkStackS3Url": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/networkingStackTemplate.json"
+    }
+  },
+  "api": {
+    "gethighestreturn": {
+      "apiType": "REST",
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "gethighestreturn",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false,
+      "output": {
+        "ServiceName": "gethighestreturn-service-python-5050",
+        "PipelineName": "amplify-investtrendv2-dev-234900-gethighestreturn-service-python-5050",
+        "ApiName": "gethighestreturn",
+        "RootUrl": "https://sgxurx8z6k.execute-api.ap-southeast-1.amazonaws.com",
+        "ContainerNames": "python",
+        "ClusterName": "amplify-investtrendv2-dev-234900-NetworkStack-9EI9N1KBHGPK-Cluster-cjkHTEpdI4fc"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.967Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/api/gethighestreturn-cloudformation-template.json",
+        "logicalId": "apigethighestreturn"
+      },
+      "exposedContainer": {
+        "name": "python",
+        "port": 5050
+      },
+      "distZipFilename": "gethighestreturn-6e4439622b75424a3449-build.zip",
+      "lastPushDirHash": "CWIVTkOq4jHAscD/Orh3pfQIfao=",
+      "lastPackageTimeStamp": "2023-12-09T12:59:58.785Z"
+    },
+    "getmostrecentchange": {
+      "apiType": "REST",
+      "build": true,
+      "categoryPolicies": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "environmentMap": {},
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "mutableParametersState": {
+        "permissions": {}
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "getmostrecentchange",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false,
+      "output": {
+        "ServiceName": "getmostrecentchange-service-python-5050",
+        "PipelineName": "amplify-investtrendv2-dev-234900-getmostrecentchange-service-python-5050",
+        "ApiName": "getmostrecentchange",
+        "RootUrl": "https://12cs6hj2uj.execute-api.ap-southeast-1.amazonaws.com",
+        "ContainerNames": "python",
+        "ClusterName": "amplify-investtrendv2-dev-234900-NetworkStack-9EI9N1KBHGPK-Cluster-cjkHTEpdI4fc"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.971Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/api/getmostrecentchange-cloudformation-template.json",
+        "logicalId": "apigetmostrecentchange"
+      },
+      "exposedContainer": {
+        "name": "python",
+        "port": 5050
+      },
+      "lastPackageTimeStamp": "2023-12-09T12:59:59.509Z",
+      "distZipFilename": "getmostrecentchange-4b2b536a4c446d6f6a39-build.zip",
+      "lastPushDirHash": "q3/F6h7dYtNteo6O8q/9uJqtad0="
+    },
+    "testinvesttrendscheduleroi": {
+      "resourceName": "testinvesttrendscheduleroi",
+      "dependsOn": [
+        {
+          "category": "",
+          "resourceName": "NetworkStack",
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ]
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "imageSource": {
+        "type": "TEMPLATE",
+        "template": "dockercompose-rest-express"
+      },
+      "restrictAccess": false,
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "ElasticContainer",
+      "environmentMap": {},
+      "categoryPolicies": [],
+      "mutableParametersState": {
+        "permissions": {}
+      },
+      "skipHashing": false,
+      "apiType": "REST",
+      "iamAccessUnavailable": true,
+      "exposedContainer": {
+        "name": "python",
+        "port": 5050
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.972Z",
+      "distZipFilename": "testinvesttrendscheduleroi-4e57455a323752584c51-build.zip",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/api/testinvesttrendscheduleroi-cloudformation-template.json",
+        "logicalId": "apitestinvesttrendscheduleroi"
+      },
+      "output": {
+        "ServiceName": "testinvesttrendscheduleroi-service-python-5050",
+        "PipelineName": "amplify-investtrendv2-dev-234900-testinvesttrendscheduleroi-service-python-5050",
+        "ApiName": "testinvesttrendscheduleroi",
+        "RootUrl": "https://1w3kj8of6c.execute-api.ap-southeast-1.amazonaws.com",
+        "ContainerNames": "python",
+        "ClusterName": "amplify-investtrendv2-dev-234900-NetworkStack-9EI9N1KBHGPK-Cluster-cjkHTEpdI4fc"
+      },
+      "lastPushDirHash": "yfp2EbwMmrpwyY9bt4n88ty0+94=",
+      "lastPackageTimeStamp": "2023-12-09T12:59:59.935Z"
+    },
+    "mt5v5": {
+      "resourceName": "mt5v5",
+      "dependsOn": [
+        {
+          "category": "",
+          "resourceName": "NetworkStack",
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ]
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "imageSource": {
+        "type": "TEMPLATE",
+        "template": "dockercompose-rest-express"
+      },
+      "restrictAccess": false,
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "ElasticContainer",
+      "skipHashing": false,
+      "apiType": "REST",
+      "iamAccessUnavailable": true,
+      "exposedContainer": {
+        "name": "python",
+        "port": 5050
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.974Z",
+      "lastPackageTimeStamp": "2023-12-10T12:56:13.730Z",
+      "distZipFilename": "mt5v5-61534f79367330354c65-build.zip",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/api/mt5v5-cloudformation-template.json",
+        "logicalId": "apimt5v5"
+      },
+      "output": {
+        "ServiceName": "mt5v5-service-python-5050",
+        "PipelineName": "amplify-investtrendv2-dev-234900-mt5v5-service-python-5050",
+        "ApiName": "mt5v5",
+        "RootUrl": "https://ol7ccezpdd.execute-api.ap-southeast-1.amazonaws.com",
+        "ContainerNames": "python",
+        "ClusterName": "amplify-investtrendv2-dev-234900-NetworkStack-9EI9N1KBHGPK-Cluster-cjkHTEpdI4fc"
+      },
+      "lastPushDirHash": "uck4zBt/B+CyNpQjhIizGVA8s5w="
+    }
+  },
+  "storage": {
+    "higestreturnOneDay": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "output": {
+        "PartitionKeyName": "id",
+        "SortKeyName": "roi",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnOneDay-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnOneDay-dev/stream/2023-10-26T13:20:31.150",
+        "PartitionKeyType": "S",
+        "Name": "higestreturnOneDay-dev"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.975Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/higestreturnOneDay-cloudformation-template.json",
+        "logicalId": "storagehigestreturnOneDay"
+      }
+    },
+    "higestreturnOneWeek": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "output": {
+        "PartitionKeyName": "id",
+        "SortKeyName": "roi",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnOneWeek-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnOneWeek-dev/stream/2023-10-26T13:20:31.665",
+        "PartitionKeyType": "S",
+        "Name": "higestreturnOneWeek-dev"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.976Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/higestreturnOneWeek-cloudformation-template.json",
+        "logicalId": "storagehigestreturnOneWeek"
+      }
+    },
+    "higestreturnThreeMonth": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "output": {
+        "PartitionKeyName": "id",
+        "SortKeyName": "roi",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnThreeMonth-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnThreeMonth-dev/stream/2023-10-26T13:20:31.331",
+        "PartitionKeyType": "S",
+        "Name": "higestreturnThreeMonth-dev"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.978Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/higestreturnThreeMonth-cloudformation-template.json",
+        "logicalId": "storagehigestreturnThreeMonth"
+      }
+    },
+    "highestreturnOneMonth": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "output": {
+        "PartitionKeyName": "id",
+        "SortKeyName": "roi",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/highestreturnOneMonth-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/highestreturnOneMonth-dev/stream/2023-10-26T13:20:31.480",
+        "PartitionKeyType": "S",
+        "Name": "highestreturnOneMonth-dev"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.979Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/highestreturnOneMonth-cloudformation-template.json",
+        "logicalId": "storagehighestreturnOneMonth"
+      }
+    },
+    "higestreturnOneYear": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/higestreturnOneYear-cloudformation-template.json",
+        "logicalId": "storagehigestreturnOneYear"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.980Z",
+      "output": {
+        "PartitionKeyName": "id",
+        "SortKeyName": "roi",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnOneYear-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/higestreturnOneYear-dev/stream/2023-12-01T04:45:29.119",
+        "PartitionKeyType": "S",
+        "Name": "higestreturnOneYear-dev"
+      },
+      "lastPushDirHash": "Kj0W65UmNRiWyS+x170JCxivs7U="
+    },
+    "investmentproducts": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/investmentproducts-cloudformation-template.json",
+        "logicalId": "storageinvestmentproducts"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.982Z",
+      "output": {
+        "PartitionKeyName": "symbol",
+        "SortKeyName": "name",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/investment_products-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/investment_products-dev/stream/2023-12-01T04:57:03.160",
+        "PartitionKeyType": "S",
+        "Name": "investment_products-dev"
+      },
+      "lastPushDirHash": "dJROSR4qlEATmS66Q/Lib+CZtvg="
+    },
+    "forwardtestbyusers": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/forwardtestbyusers-cloudformation-template.json",
+        "logicalId": "storageforwardtestbyusers"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.986Z",
+      "output": {
+        "PartitionKeyName": "test_id",
+        "SortKeyName": "start_time",
+        "SortKeyType": "S",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/forward_test_by_users-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/forward_test_by_users-dev/stream/2023-12-08T05:17:13.708",
+        "PartitionKeyType": "S",
+        "Name": "forward_test_by_users-dev"
+      },
+      "lastPushDirHash": "v1Hhc46InUhC+QP+uts7x21xW78="
+    },
+    "testByUsers": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/storage/testByUsers-cloudformation-template.json",
+        "logicalId": "storagetestByUsers"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.988Z",
+      "output": {
+        "PartitionKeyName": "test_id",
+        "Region": "ap-southeast-1",
+        "Arn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/test_by_users-dev",
+        "StreamArn": "arn:aws:dynamodb:ap-southeast-1:424001042826:table/test_by_users-dev/stream/2023-12-09T13:00:14.458",
+        "PartitionKeyType": "S",
+        "Name": "test_by_users-dev"
+      },
+      "lastPushDirHash": "lMEWhmSoF3hX5u7bHQ7gIV+VyTw="
+    }
+  },
+  "function": {
+    "investtrendv2findbest": {
+      "providerPlugin": "awscloudformation",
+      "service": "LambdaLayer",
+      "build": true,
+      "lastBuildTimeStamp": "2023-10-30T12:52:15.993Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2023-10-30T12:52:49.656Z",
+      "distZipFilename": "investtrendv2findbest-LambdaLayerVersion7c2182bc-build.zip",
+      "latestPushedVersionHash": "cbb0a0c8ee5ee89de6e4a6a4293d0a9c79c19000d7103b623481cc6a25ccb912",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-investtrendv2-dev-234900-deployment",
+        "s3Key": "amplify-builds/investtrendv2findbest-LambdaLayerVersion7c2182bc-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/function/investtrendv2findbest-awscloudformation-template.json",
+        "logicalId": "functioninvesttrendv2findbest"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:39:38.990Z",
+      "output": {
+        "Arn": "arn:aws:lambda:ap-southeast-1:424001042826:layer:investtrendv2findbest-dev:1"
+      }
+    },
+    "getHighestReturn": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [],
+      "lastBuildTimeStamp": "2024-01-26T14:40:00.076Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2024-01-26T14:40:20.502Z",
+      "distZipFilename": "getHighestReturn-6b4b7657445737476453-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-investtrendv2-dev-234900-deployment",
+        "s3Key": "amplify-builds/getHighestReturn-6b4b7657445737476453-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/function/getHighestReturn-cloudformation-template.json",
+        "logicalId": "functiongetHighestReturn"
+      },
+      "lastPushTimeStamp": "2024-01-26T14:40:48.576Z"
+    }
+  }
+}

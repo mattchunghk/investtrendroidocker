@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from itertools import groupby
 import schedule
 import time
-
+from boto3.dynamodb.conditions import Key
 
 import datetime as dt
 import matt_supertrend as mst
@@ -22,27 +22,64 @@ aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 region_name = os.getenv('AWS_REGION')
 
-    
-# dynamodb = boto3.resource('dynamodb', 
-#                           aws_access_key_id=aws_access_key_id, 
-#                           aws_secret_access_key=aws_secret_access_key, 
-#                           region_name=region_name)
-dynamodb = boto3.Session('dynamodb', 
+dynamodb = boto3.resource('dynamodb', 
+                          aws_access_key_id=aws_access_key_id, 
+                          aws_secret_access_key=aws_secret_access_key, 
                           region_name=region_name)
 
 
-# table = dynamodb.Table('run5yearshighestreturn-dev')
 
-# app = Flask(__name__)
-# CORS(app)
+def delete_old_data(table, days_old=14):
+
+    # Define the timestamp to compare with (14 days ago)
+    cutoff_date = datetime.utcnow() - timedelta(days=days_old)
+    cutoff_timestamp = cutoff_date.strftime('%Y-%m-%d')
+
+    
+    # Use the DynamoDB query operation to find items with 'end_date' older than the cutoff date
+    response = table.query(
+
+        IndexName='end_date-index',  # Assuming 'end_date-index' is a global secondary index (GSI)
+        KeyConditionExpression=Key('end_date').eq(cutoff_timestamp)  # lt stands for 'less than'
+    )
+    print('response: ', response)
+
+    # Delete these items
+    if response['Count'] > 0:
+        with table.batch_writer() as batch:
+            for item in response.get('Items', []):
+                batch.delete_item(
+                    Key={
+                        'id': item['id']  # Assuming 'id' is the primary key
+                    }
+                )
+
+        # If your table has a lot of items, handle query pagination
+        while 'LastEvaluatedKey' in response:
+            response = table.query(
+                IndexName='end_date-index',
+                KeyConditionExpression=Key('end_date').lt(cutoff_timestamp),
+                ExclusiveStartKey=response['LastEvaluatedKey']
+            )
+
+            with table.batch_writer() as batch:
+                for item in response.get('Items', []):
+                    batch.delete_item(
+                        Key={
+                            'id': item['id']
+                        }
+                    )
 
 
-
-def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investment=10000000, commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table="", print_result=True, print_detail=True):
+def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investment=100000000,lot_size=0.1, sl_size=5000,tp_size=5000,
+                     commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table="",symbols=[],names=[]):
 
 
     print('db_table: ', db_table)
     table = dynamodb.Table(db_table)
+    
+    # Delete data older than 14 days before starting the backtest
+    # delete_old_data(table,14)
     
     period = 0    
     
@@ -67,32 +104,29 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
         start_date = (datetime.now() - timedelta(days=period)).strftime('%Y-%m-%d')
     if end_date is None:
         end_date = datetime.now().strftime('%Y-%m-%d')
-    
-
-        
-        
 
     strategy = mst.Supertrend
-    backtest = mst.backtest_supertrend
-
-    # symbols, names  = mst.get_yfinance_crypto_list(symbol_list_length)
-    symbols, names = get_items_from_dynamodb(pd_table)
-
+    backtest = mst.backtest
+    
+    # symbols, names = get_items_from_dynamodb(pd_table)
     results = []
-    print('len(symbols): ', len(symbols))
+    # print('len(symbols): ', len(symbols))
     for i in range(len(symbols)):
-        
+        # if symbols[i] == "BTC-USD":
         try:
             print(i)
             symbol = symbols[i]
+            # symbol = "ETH-USD"
             name = names[i]
             fy_df = mst.get_yf_df(symbol, start_date, end_date, interval)
+            # print('start_date: ', start_date)
+            # print('end_date: ', end_date)
 
             print(symbol)
-            atr_period, multiplier, ROI = mst.find_optimal_parameter(fy_df, strategy, backtest, investment, commission, None, None)
-            print(f'Best parameter set: ATR Period={atr_period}, Multiplier={multiplier}, ROI={ROI}%')
-            best_df = mst.get_yf_df_with_best_parameters(symbol, start_date, end_date, interval,atr_period, multiplier)
-            mst.backtest_supertrend(best_df, investment, commission, True, False)
+            atr_period, multiplier, ROI = mst.find_optimal_parameter(fy_df, strategy, backtest, investment, lot_size, sl_size, tp_size,commission,None,None)
+            print("Best parameter set: ATR Period={}, Multiplier={}, ROI={}%" .format(atr_period, multiplier, ROI))
+            # best_df = mst.get_yf_df_with_best_parameters(symbol, start_date, end_date, interval,atr_period, multiplier)
+            # mst.backtest(best_df, investment, lot_size, sl_size, tp_size, commission)
             print(" ")
 
             results.append({
@@ -102,98 +136,79 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
                 "start_date": start_date,
                 "end_date": end_date,
             })
+            with table.batch_writer() as batch:
+                for result in results:
+                    # print('result: ', result)
+                    try:    
+                        table.put_item(
+                            Item={
+                                'id': str(uuid4()),  # Generate a unique id
+                                'symbol': result['symbol'],
+                                'name': result['name'],
+                                'product_category': 'Cryptocurrency',
+                                'roi': str(result['ROI']),
+                                "start_date": start_date,
+                                "end_date": end_date,
+                                'strategy_category': 'Supertrend',
+                                'created_at': str(dt.datetime.now()),  # DynamoDB doesn't support datetime, so convert it to string
+                                'updated_at': str(dt.datetime.now()),
+                            }
+                        )
+                        print("item inserted")
+                        results = []
+                    except Exception as e:
+                                print(e)
             
-            for result in results:
-                table.put_item(
-                    Item={
-                        'id': str(uuid4()),  # Generate a unique id
-                        'symbol': result['symbol'],
-                        'name': result['name'],
-                        'product_category': 'Cryptocurrency',
-                        'roi': str(result['ROI']),
-                        "start_date": start_date,
-                        "end_date": end_date,
-                        'strategy_category': 'Supertrend',
-                        'created_at': str(dt.datetime.now()),  # DynamoDB doesn't support datetime, so convert it to string
-                        'updated_at': str(dt.datetime.now()),
-                    }
-                )
+            
         except Exception as e:
                     print(e)
-             
             
 
-
-
-
 # Define the job function to be scheduled
-def day_job():
+def lambda_handler(event, context):
+    
     print("Performing backtest...")
     symbol_list_length=250
-    investment=10000000
+    investment=100000
+    lot_size=1
+    sl_size=0
+    tp_size=0
     commission=0
     start_date=None
     end_date=None
     interval='1d'
-    test_period="1Y"
-    print_result=True
-    print_detail=True
-    symbols, names = mst.get_yfinance_crypto_list(symbol_list_length)
-    pd_table = dynamodb.Table('investment_products-dev')
+    # test_period="1Y"
+    # print_result=True
+    # print_detail=True
+    # symbols, names = mst.get_yfinance_crypto_list(symbol_list_length)
+    # pd_table = dynamodb.Table('investment_products-dev')
+    pd_table = dynamodb.Table('investment_products_local')
     
-    update_dynamodb_table(symbols, names, pd_table)
-    print("DONE update_dynamodb_table")
+    # update_dynamodb_table(symbols, names, pd_table)
+    # print("DONE update_dynamodb_table")
+    symbols, names = get_items_from_dynamodb(pd_table)
+    print('symbols: ', len(symbols))
+    group = 10
+    remaining = len(symbols) % group
+    full_groups = len(symbols) // group
+    index = 0
     
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek-dev",print_result, print_detail)
-    perform_backtest(pd_table,investment, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay-dev",print_result, print_detail)
+    for i in range(full_groups):
+        print(index, index + group )
+        print(symbols[index: index + group ])
+        sorted_symbols = symbols[index: index + group ]
+        sorted_names = names[index: index + group ]
+        perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi",sorted_symbols,sorted_names)
+        index += group
+    remaining_symbols = symbols[index:index + remaining ]
+    remaining_names = names[index:index + remaining ]
+    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi",remaining_symbols,remaining_names)
     
-
-# Schedule the job to run every hour
-# schedule.every(1).day.do(day_job)
-schedule.every().day.at("00:00").do(day_job)
-
-# Run the scheduler loop
-while True:
-    day_job()
-    schedule.run_pending()
-    time.sleep(1)
-
-# day_job()
-
-# def get_latest_items_by_symbol():
-#     # Scan the table
-#     response = table.scan()
-
-#     # Get the items
-#     items = response['Items']
-
-#     # Convert 'created_at' from string to datetime and sort items by symbol and date
-#     items.sort(key=lambda x: (x['symbol'], dt.datetime.strptime(x['created_at'], "%Y-%m-%d %H:%M:%S.%f")))
-
-#     # Group items by symbol and select the most recent item in each group
-#     latest_items_by_symbol = {}
-#     for key, group in groupby(items, lambda x: x['symbol']):
-#         latest_items_by_symbol[key] = max(list(group), key=lambda x: x['created_at'])
-
-#     # Sort the latest items by symbol by ROI in descending order
-#     latest_items_sorted_by_roi = sorted(latest_items_by_symbol.values(), key=lambda x: x['roi'], reverse=True)
-#     print('latest_items_sorted_by_roi: ', latest_items_sorted_by_roi)
+    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi",symbols,names)
+    # perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear")
+    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth")
+    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth")
+    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek")
+    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay")
     
-#     result = []
-#     for item in latest_items_sorted_by_roi:
-#         print(f"Symbol: {item['symbol']}, Name: {item['name']}, Roi: {item['roi']}")
-#         result.append({
-#                     "symbol": item['symbol'],
-#                     "name":item['name'],
-#                     "roi": item['roi'],
-#                     "Created_at":item['created_at']
-#                 })
-
-#     return result
-
-# get_latest_items_by_symbol()
-
-
+lambda_handler(None, None)

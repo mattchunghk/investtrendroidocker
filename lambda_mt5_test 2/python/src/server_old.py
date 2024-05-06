@@ -72,7 +72,7 @@ def delete_old_data(table, days_old=14):
 
 
 def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investment=100000000,lot_size=0.1, sl_size=5000,tp_size=5000,
-                     commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table=""):
+                     commission=0, start_date=None, end_date=None, interval='1d', test_period="1Y", db_table="",symbols=[],names=[]):
 
 
     print('db_table: ', db_table)
@@ -108,10 +108,9 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
     strategy = mst.Supertrend
     backtest = mst.backtest
     
-    symbols, names = get_items_from_dynamodb(pd_table)
-    
+    # symbols, names = get_items_from_dynamodb(pd_table)
     results = []
-    print('len(symbols): ', len(symbols))
+    # print('len(symbols): ', len(symbols))
     for i in range(len(symbols)):
         # if symbols[i] == "BTC-USD":
         try:
@@ -164,17 +163,10 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
         except Exception as e:
                     print(e)
             
-                    
-        
-        
-             
-            
-
-
-
 
 # Define the job function to be scheduled
-def day_job():
+def lambda_handler(event, context):
+    
     print("Performing backtest...")
     symbol_list_length=250
     investment=100000
@@ -188,19 +180,35 @@ def day_job():
     # test_period="1Y"
     # print_result=True
     # print_detail=True
-    symbols, names = mst.get_yfinance_crypto_list(symbol_list_length)
+    # symbols, names = mst.get_yfinance_crypto_list(symbol_list_length)
     # pd_table = dynamodb.Table('investment_products-dev')
     pd_table = dynamodb.Table('investment_products_local')
     
     # update_dynamodb_table(symbols, names, pd_table)
     # print("DONE update_dynamodb_table")
+    symbols, names = get_items_from_dynamodb(pd_table)
+    print('symbols: ', len(symbols))
+    group = 10
+    remaining = len(symbols) % group
+    full_groups = len(symbols) // group
+    index = 0
     
-    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi")
+    for i in range(full_groups):
+        print(index, index + group )
+        print(symbols[index: index + group ])
+        sorted_symbols = symbols[index: index + group ]
+        sorted_names = names[index: index + group ]
+        perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi",sorted_symbols,sorted_names)
+        index += group
+    remaining_symbols = symbols[index:index + remaining ]
+    remaining_names = names[index:index + remaining ]
+    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi",remaining_symbols,remaining_names)
+    
+    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi",symbols,names)
     # perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear")
     # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth")
     # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth")
     # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek")
     # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay")
     
-
-day_job()
+lambda_handler(None, None)

@@ -1,0 +1,14 @@
+{
+  "resourceName": "higestreturnOneDay",
+  "tableName": "higestreturnOneDay",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "roi",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

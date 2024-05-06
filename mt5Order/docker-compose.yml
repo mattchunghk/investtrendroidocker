@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    networks:
+      - public
+      - private
+    ports:
+      - "9090:9090"
+networks:
+  public:
+    driver: bridge
+  private:
+    driver: bridge

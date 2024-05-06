@@ -27,6 +27,13 @@ dynamodb = boto3.resource('dynamodb',
                           aws_secret_access_key=aws_secret_access_key, 
                           region_name=region_name)
 
+pd_table = dynamodb.Table('investment_products_local')
+symbols, names = get_items_from_dynamodb(pd_table)
+    
+# dynamodb = boto3.resource('dynamodb', 
+#                           aws_access_key_id="AKIAWFODOPGFGGIEVY7C", 
+#                           aws_secret_access_key="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", 
+#                           region_name="ap-southeast-1")
 
 
 def delete_old_data(table, days_old=14):
@@ -42,7 +49,6 @@ def delete_old_data(table, days_old=14):
         IndexName='end_date-index',  # Assuming 'end_date-index' is a global secondary index (GSI)
         KeyConditionExpression=Key('end_date').eq(cutoff_timestamp)  # lt stands for 'less than'
     )
-    print('response: ', response)
 
     # Delete these items
     if response['Count'] > 0:
@@ -79,7 +85,7 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
     table = dynamodb.Table(db_table)
     
     # Delete data older than 14 days before starting the backtest
-    # delete_old_data(table,14)
+    delete_old_data(table,14)
     
     period = 0    
     
@@ -101,14 +107,16 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
     
     # if no start_date or end_date is provided, use default values
     if start_date is None:
-        start_date = (datetime.now() - timedelta(days=period)).strftime('%Y-%m-%d')
+        # start_date = (datetime.now() - timedelta(days=period)).strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=period-2)).strftime('%Y-%m-%d')
     if end_date is None:
-        end_date = datetime.now().strftime('%Y-%m-%d')
+        # end_date = datetime.now().strftime('%Y-%m-%d')
+        end_date = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
 
     strategy = mst.Supertrend
     backtest = mst.backtest
     
-    symbols, names = get_items_from_dynamodb(pd_table)
+    
     
     results = []
     print('len(symbols): ', len(symbols))
@@ -164,8 +172,17 @@ def perform_backtest(pd_table=dynamodb.Table('investment_products-dev'), investm
         except Exception as e:
                     print(e)
             
+                    
+        
+        
+             
+            
+
+
+
 
 # Define the job function to be scheduled
+
 def day_job():
     print("Performing backtest...")
     symbol_list_length=250
@@ -184,24 +201,15 @@ def day_job():
     # pd_table = dynamodb.Table('investment_products-dev')
     pd_table = dynamodb.Table('investment_products_local')
     
-    # update_dynamodb_table(symbols, names, pd_table)
-    # print("DONE update_dynamodb_table")
+    update_dynamodb_table(symbols, names, pd_table)
+    print("DONE update_dynamodb_table")
     
-    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi")
-    # perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear")
-    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth")
-    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth")
-    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek")
-    # perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay")
+    # perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "test_roi")
+    perform_backtest(pd_table, investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1Y", "higestreturnOneYear")
+    perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "3M", "higestreturnThreeMonth")
+    perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1M", "highestreturnOneMonth")
+    perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek")
+    perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay")
     
 
-import json
-
-def lambda_handler(event, context):
-    print('event: ', event)
-
-    # TODO implement
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
+day_job()

@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    networks:
+      - public
+      - private
+    ports:
+      - "5052:5052"
+networks:
+  public:
+  private:

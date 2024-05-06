@@ -1,0 +1,28 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-investtrendv2-dev-234900-authRole",
+      "UnauthRoleArn": "arn:aws:iam::424001042826:role/amplify-investtrendv2-dev-234900-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::424001042826:role/amplify-investtrendv2-dev-234900-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-investtrendv2-dev-234900-deployment",
+      "UnauthRoleName": "amplify-investtrendv2-dev-234900-unauthRole",
+      "StackName": "amplify-investtrendv2-dev-234900",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:424001042826:stack/amplify-investtrendv2-dev-234900/5b369d60-7029-11ee-b890-06c582aaa8b4",
+      "AmplifyAppId": "d2nsz01ir8b6oj",
+      "NetworkStackS3Url": "https://s3.amazonaws.com/amplify-investtrendv2-dev-234900-deployment/amplify-cfn-templates/networkingStackTemplate.json"
+    },
+    "categories": {
+      "api": {
+        "gethighestreturn": {},
+        "getmostrecentchange": {}
+      },
+      "storage": {
+        "highestreturnOneMonth": {},
+        "higestreturnThreeMonth": {},
+        "higestreturnOneWeek": {},
+        "higestreturnOneDay": {}
+      }
+    }
+  }
+}

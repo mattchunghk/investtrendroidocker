@@ -1,0 +1,195 @@
+{
+  "api": {
+    "gethighestreturn": {
+      "apiType": "REST",
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "gethighestreturn",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false
+    },
+    "getmostrecentchange": {
+      "apiType": "REST",
+      "build": true,
+      "categoryPolicies": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "environmentMap": {},
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "mutableParametersState": {
+        "permissions": {}
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "getmostrecentchange",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false
+    },
+    "mt5v5": {
+      "apiType": "REST",
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "mt5v5",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false
+    },
+    "testinvesttrendscheduleroi": {
+      "apiType": "REST",
+      "build": true,
+      "categoryPolicies": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "ClusterName",
+            "VpcId",
+            "VpcCidrBlock",
+            "SubnetIds",
+            "VpcLinkId",
+            "CloudMapNamespaceId"
+          ],
+          "category": "",
+          "resourceName": "NetworkStack"
+        }
+      ],
+      "deploymentMechanism": "FULLY_MANAGED",
+      "environmentMap": {},
+      "iamAccessUnavailable": true,
+      "imageSource": {
+        "template": "dockercompose-rest-express",
+        "type": "TEMPLATE"
+      },
+      "mutableParametersState": {
+        "permissions": {}
+      },
+      "providerPlugin": "awscloudformation",
+      "resourceName": "testinvesttrendscheduleroi",
+      "restrictAccess": false,
+      "service": "ElasticContainer",
+      "skipHashing": false
+    }
+  },
+  "function": {
+    "getHighestReturn": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "investtrendv2findbest": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "LambdaLayer"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_investtrendv2findbest_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "investtrendv2findbest"
+        }
+      ]
+    },
+    "AMPLIFY_function_investtrendv2findbest_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "investtrendv2findbest"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "forwardtestbyusers": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "higestreturnOneDay": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "higestreturnOneWeek": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "higestreturnOneYear": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "higestreturnThreeMonth": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "highestreturnOneMonth": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "investmentproducts": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "testByUsers": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    }
+  }
+}
