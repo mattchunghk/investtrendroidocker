@@ -14,6 +14,7 @@ import datetime as dt
 import matt_supertrend as mst
 from get_product_in_dydb import get_items_from_dynamodb
 from save_product_in_dydb import update_dynamodb_table
+from most_recent_chagne import most_recent_to_db
 
 # Load environment variables from .env file
 load_dotenv()
@@ -211,5 +212,9 @@ def day_job():
     perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, interval, "1W", "higestreturnOneWeek")
     perform_backtest(pd_table,investment, lot_size, sl_size, tp_size, commission, start_date, end_date, "1h", "1D", "higestreturnOneDay")
     
-
-day_job()
+    
+    most_recent_table = dynamodb.Table('TBC')
+    most_recent_to_db(symbols, start_date, end_date, interval,"1Y", "higestreturnOneYear")
+    
+if __name__ == '__main__'
+    day_job()
